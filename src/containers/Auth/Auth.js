@@ -138,7 +138,7 @@ class Auth extends Component {
         {errorMessage}
         <form onSubmit={this.submitHandler}>
           {form}
-          <Button buttonType="Success">SIGN IN</Button>
+          <Button buttonType="Success">SUBMIT</Button>
         </form>
         <Button 
         clicked={this.switchAuthModeHandler}
