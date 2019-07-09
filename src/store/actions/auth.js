@@ -59,3 +59,10 @@ url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword
             .catch(error => dispatch(authFail(error.response.data.error)));
     };
 } 
+
+export const setAuthRedirectPath = (path) => {
+    return {
+        type: actionTypes.SET_AUTH_REDIRECT_PATH,
+        path: path
+    }
+};
