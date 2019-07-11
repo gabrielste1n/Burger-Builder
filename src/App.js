@@ -23,7 +23,7 @@ let routes =(
   </Switch>
 );
 
-if(this.routes.isAuthenticated){
+if(this.props.isAuthenticated){
   routes = (
   <Switch>
     <Route path="/checkout" component={Checkout} />
