@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 
 import Button from "../../../components/UI/Button/Button";
@@ -10,8 +10,8 @@ import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../../store/actions/index";
 import { updateObject, checkValidity} from "../../../shared/utility";
 
-class ContactData extends Component {
-  state = {
+const contactData = props => {
+  const [orderForm, setOrderForm] = useState({
     orderForm: {
       name: {
         elementType: "input",
@@ -93,44 +93,45 @@ class ContactData extends Component {
         value: "fastest",
         validation: {},
         valid: true
-      }
-    },
-    formIsValid: false
-  };
+      }}}
+    );
 
-  orderHandler = event => {
+   const [formIsValid, setFormIsValid] = useState(false);
+  
+
+  const orderHandler = event => {
     event.preventDefault();
 
     const formData = {};
-    for (let formElementIdentifier in this.state.orderForm) {
-      formData[formElementIdentifier] = this.state.orderForm[
+    for (let formElementIdentifier in orderForm) {
+      formData[formElementIdentifier] = orderForm[
         formElementIdentifier
       ].value;
     }
     const order = {
-      ingredients: this.props.ings,
-      price: this.props.price,
+      ingredients: props.ings,
+      price: props.price,
       orderData: formData,
-      userId: this.props.userId
+      userId: props.userId
     };
 
-    this.props.onOrderBurger(order, this.props.token);
+    props.onOrderBurger(order, props.token);
   };
 
-  inputChangedHandler = (event, inputIdentifier) => {
+  const inputChangedHandler = (event, inputIdentifier) => {
     const updatedFormElement = updateObject(
-      this.state.orderForm[inputIdentifier],
+      orderForm[inputIdentifier],
       {
         value: event.target.value,
         valid: checkValidity(
           event.target.value,
-          this.state.orderForm[inputIdentifier].validation
+          orderForm[inputIdentifier].validation
         ),
         touched: true
       }
     );
 
-    const updatedOrderForm = updateObject(this.state.orderForm, {
+    const updatedOrderForm = updateObject(orderForm, {
       [inputIdentifier]: updatedFormElement
     });
 
@@ -138,19 +139,20 @@ class ContactData extends Component {
     for (let inputIdentifier in updatedOrderForm) {
       formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
     }
-    this.setState({ orderForm: updatedOrderForm, formIsValid: formIsValid });
+    setOrderForm(updatedOrderForm);
+    setFormIsValid(formIsValid);
   };
 
-  render() {
+  
     const formElementsArray = [];
-    for (let key in this.state.orderForm) {
+    for (let key in orderForm) {
       formElementsArray.push({
         id: key,
-        config: this.state.orderForm[key]
+        config: orderForm[key]
       });
     }
     let form = (
-      <form onSubmit={this.orderHandler}>
+      <form onSubmit={orderHandler}>
         {formElementsArray.map(formElement => (
           <Input
             key={formElement.id}
@@ -160,15 +162,15 @@ class ContactData extends Component {
             invalid={!formElement.config.valid}
             shouldValidate={formElement.config.validation}
             touched={formElement.config.touched}
-            changed={event => this.inputChangedHandler(event, formElement.id)}
+            changed={event => inputChangedHandler(event, formElement.id)}
           />
         ))}
-        <Button buttonType="Success" disabled={!this.state.formIsValid}>
+        <Button buttonType="Success" disabled={!formIsValid}>
           ORDER
         </Button>
       </form>
     );
-    if (this.props.loading) {
+    if (props.loading) {
       form = <Spinner />;
     }
     return (
@@ -178,7 +180,7 @@ class ContactData extends Component {
       </div>
     );
   }
-}
+
 
 const mapStateToProps = state => {
   return {
@@ -200,4 +202,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withErrorHandler(ContactData, axios));
+)(withErrorHandler(contactData, axios));
