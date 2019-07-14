@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import Layout from "./hoc/Layout/Layout";
@@ -18,12 +18,14 @@ const asyncOrders = asyncComponent(()=>{
 const asyncAuth = asyncComponent(()=>{
   return import('./containers/Auth/Auth');
 });
-class App extends Component {
-  componentDidMount(){
-    this.props.onTryAutoSignup();
-  }
 
-  render() {
+const app = props => {
+
+  useEffect(()=> {
+    props.onTryAutoSignup();
+  }, []);
+
+  
 let routes =(
   <Switch>
     <Route path="/auth" component={asyncAuth} />
@@ -32,7 +34,7 @@ let routes =(
   </Switch>
 );
 
-if(this.props.isAuthenticated){
+if(props.isAuthenticated){
   routes = (
   <Switch>
     <Route path="/checkout" component={asyncCheckout} />
@@ -51,7 +53,7 @@ if(this.props.isAuthenticated){
       </div>
     );
   }
-}
+
 
 const mapStateToProps = state => {
   return {
@@ -65,4 +67,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(app));
